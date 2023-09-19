@@ -6,13 +6,90 @@
 /*   By: incalero <incalero@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 10:26:09 by incalero          #+#    #+#             */
-/*   Updated: 2023/09/18 15:54:54 by incalero         ###   ########.fr       */
+/*   Updated: 2023/09/19 16:01:57 by incalero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <stdarg.h>
 #include <unistd.h>
+
+void	ft_putchar(char c)
+{
+	write(1 , &c, 1);
+}
+
+void	ft_putstr(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] != '\0')
+		write (1 , &s[i++], 1);
+}
+
+void	ft_putnbr(int n)
+{
+	long int	x;
+
+	x = n;
+	if (x < 0)
+	{
+		ft_putchar('-');
+		x = -x;
+	}
+	if (x >= 10)
+	{
+		ft_putnbr(x / 10);
+		ft_putnbr(x % 10);
+	}
+	else
+		ft_putchar(x + '0');
+}
+
+void	ft_putnbr_unsigned(unsigned int n)
+{
+	long int	x;
+
+	x = n;
+
+	if (x >= 10)
+	{
+		ft_putnbr(x / 10);
+		ft_putnbr(x % 10);
+	}
+	else
+		ft_putchar(x + '0');
+}
+
+void	mostr_exad (const void *ptr)
+{
+	char str[16];  // Buffer para almacenar la dirección en formato hexadecimal
+    unsigned long long direccion;
+	char	*p;
+
+	p = "0123456789abcdef";
+	direccion = (unsigned long long)ptr;
+	int indice = sizeof(str) -1;
+	str[indice] = '\0';
+
+	while (indice > 0 && direccion > 0) 
+	{
+        indice--;
+    	str[indice] = p[direccion % 16];
+        direccion /= 16;
+    }
+	if (indice >= 2) 
+	{
+        str[indice - 1] = 'x';
+        str[indice - 2] = '0';
+        indice -= 2;
+    }
+	write(1, str + indice, sizeof(str) - indice);
+
+}
+
+
 
 int	ft_selected(char c, va_list args)
 {
@@ -21,7 +98,7 @@ int	ft_selected(char c, va_list args)
 		char	c;
 		
 		c = va_arg(args, int);
-		write(1, &c, 1);
+		ft_putchar(c);
 		return(1);
 	}
 	if (c == 's')
@@ -29,7 +106,47 @@ int	ft_selected(char c, va_list args)
 		char	*str;
 		
 		str = va_arg(args, char*);
+		ft_putstr(str);
 	}
+
+	if (c == 'p')
+	{
+		char	*str;
+		
+		str = (char*)va_arg(args, const void *);
+		mostr_exad (str);
+		return(0);
+	}
+
+	if (c == 'd' || c == 'i')
+	{
+		int	c;
+		
+		c = va_arg(args, int);
+		ft_putnbr(c);
+		return(1);
+	}
+
+	if (c == 'u')
+	{
+		unsigned int	c;
+		
+		c = va_arg(args, unsigned int);
+		ft_putnbr_unsigned(c);
+		return(0);
+	}
+
+	if (c == 'x' || c == 'X')
+	{
+		return(0);
+	}
+
+	if (c == '%')
+	{
+		write(1, "%", 1);
+		return(1);
+	}
+	
 	return(0);		
 }
 
@@ -70,10 +187,53 @@ int ft_printf(char const *str, ...)
 
 int main(void)
 {
-	char	c;
-	c = 'abcd';
+	char	*c;
+	char	a;
+	int		b;
+	unsigned int	d;
+	unsigned int	e;
+	
+	a = 'a';
+	c = "abcde";
+	b = -15674;
+	d = -1267;
+	e = 42;
 
-	ft_printf("el caracter es: %c", c);
+	ft_printf("el caracter es    %c\n", a);
+	printf("el caracter p es: %c\n", a);
+	printf("\n");
+	
+	ft_printf("el string es:      %s\n", c);
+	printf("el string en p es: %s\n", c);
+	printf("\n");
+	
+	ft_printf("el numero es:      %d\n", b);
+	printf("el numero en p es: %d\n", b);
+	printf("\n");
+
+	ft_printf("el numero es:      %i\n", b);
+	printf("el numero en p es: %i\n", b);
+	printf("\n");
+	
+	ft_printf("el numero positivo es:      %u\n", d);
+	printf("el numero positivo en p es: %u\n", d);
+	printf("\n");
+
+	ft_printf("el numero positivo es:      %u\n", e);
+	printf("el numero positivo en p es: %u\n", e);
+	printf("\n");
+
+	ft_printf("el caracter es:      %%\n");
+	printf("el caracter en p es: %%\n");
+	printf("\n");
+	
+	ft_printf("el la direccion de memoria es:       %p\n", c);
+	printf("el la direccion de memoria con p es: %p\n", c);
+	printf("\n");
+
+	printf("el numero %u " ,e); 
+	printf("en hexadecimal es: %x\n", e);
+
 	return(0);
 	
 	
