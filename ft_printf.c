@@ -6,7 +6,7 @@
 /*   By: incalero <incalero@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 10:26:09 by incalero          #+#    #+#             */
-/*   Updated: 2023/09/19 16:01:57 by incalero         ###   ########.fr       */
+/*   Updated: 2023/09/20 10:22:57 by incalero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	ft_putnbr_unsigned(unsigned int n)
 		ft_putchar(x + '0');
 }
 
-void	mostr_exad (const void *ptr)
+void	str_direccion (const void *ptr)
 {
 	char str[16];  // Buffer para almacenar la dirección en formato hexadecimal
     unsigned long long direccion;
@@ -85,6 +85,28 @@ void	mostr_exad (const void *ptr)
         str[indice - 2] = '0';
         indice -= 2;
     }
+	write(1, str + indice, sizeof(str) - indice);
+
+}
+
+void	put_hexa_x (const void *ptr)
+{
+	char str[16];  // Buffer para almacenar la dirección en formato hexadecimal
+    unsigned long long direccion;
+	char	*p;
+
+	p = "0123456789abcdef";
+	direccion = (unsigned long long)ptr;
+	int indice = sizeof(str) -1;
+	str[indice] = '\0';
+
+	while (indice > 0 && direccion > 0) 
+	{
+        indice--;
+    	str[indice] = p[direccion % 16];
+        direccion /= 16;
+    }
+	
 	write(1, str + indice, sizeof(str) - indice);
 
 }
@@ -114,7 +136,7 @@ int	ft_selected(char c, va_list args)
 		char	*str;
 		
 		str = (char*)va_arg(args, const void *);
-		mostr_exad (str);
+		str_direccion (str);
 		return(0);
 	}
 
@@ -138,6 +160,10 @@ int	ft_selected(char c, va_list args)
 
 	if (c == 'x' || c == 'X')
 	{
+		char	*str;
+		
+		str = (char*)va_arg(args, const void *);
+		put_hexa_x (str);
 		return(0);
 	}
 
@@ -192,16 +218,26 @@ int main(void)
 	int		b;
 	unsigned int	d;
 	unsigned int	e;
+	int	i;
+	int	j;
 	
 	a = 'a';
 	c = "abcde";
 	b = -15674;
 	d = -1267;
 	e = 42;
-
-	ft_printf("el caracter es    %c\n", a);
-	printf("el caracter p es: %c\n", a);
+	
+	i = ft_printf("%c", a);
+	j = printf("%c", a);
 	printf("\n");
+	
+	printf("es esto i? %i\n", i);
+	printf("es esto j? %i\n", j);
+	printf("prinf: %i\n", (printf("%c", a)));
+	
+	/*printf(" y printf me devuelve %i\n", printf("el resultado de printf es: %c", 'a'));*/
+	
+
 	
 	ft_printf("el string es:      %s\n", c);
 	printf("el string en p es: %s\n", c);
@@ -231,8 +267,10 @@ int main(void)
 	printf("el la direccion de memoria con p es: %p\n", c);
 	printf("\n");
 
+	ft_printf("el numero %u " ,e); 
+	ft_printf("en hexadecimal es: %x\n", e);
 	printf("el numero %u " ,e); 
-	printf("en hexadecimal es: %x\n", e);
+	printf("en printf en hexadecimal es: %x\n", e);
 
 	return(0);
 	
